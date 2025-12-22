@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Network Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <h1>Network<span>Pro</span></h1>
+                </div>
+                <div class="header-info">
+                    <div class="last-update">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Last updated: <span id="update-time">--:--:--</span></span>
+                    </div>
+                    <div class="refresh-control">
+                        <button id="refresh-btn" class="btn-refresh">
+                            <i class="fas fa-redo"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item active">
+                <div class="status-indicator"></div>
+                <span>System Online</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Security: Active</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-bolt"></i>
+                <span>Performance: Optimal</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+            <!-- Row 1: Key Metrics -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><i class="fas fa-upload"></i> Upload Speed</h3>
+                        <span class="metric-trend up">+2.4%</span>
+                    </div>
+                    <div class="metric-value" id="upload-speed">0.00</div>
+                    <div class="metric-sub">Mbps</div>
+                    <div class="metric-progress">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><i class="fas fa-download"></i> Download Speed</h3>
+                        <span class="metric-trend down">-1.2%</span>
+                    </div>
+                    <div class="metric-value" id="download-speed">0.00</div>
+                    <div class="metric-sub">Mbps</div>
+                    <div class="metric-progress">
+                        <div class="progress-bar" style="width: 85%"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><i class="fas fa-link"></i> Active Connections</h3>
+                        <span class="metric-trend up">+5</span>
+                    </div>
+                    <div class="metric-value" id="connections">0</div>
+                    <div class="metric-sub">Connections</div>
+                    <div class="connections-list" id="connections-list">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><i class="fas fa-clock"></i> Latency</h3>
+                        <span class="metric-trend stable">Stable</span>
+                    </div>
+                    <div class="metric-value" id="latency">0</div>
+                    <div class="metric-sub">ms</div>
+                    <div class="latency-gauge">
+                        <div class="gauge-fill" id="latency-gauge"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Charts -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Bandwidth Usage (Last 24h)</h3>
+                        <div class="chart-legend">
+                            <span class="legend-upload"><i class="fas fa-circle"></i> Upload</span>
+                            <span class="legend-download"><i class="fas fa-circle"></i> Download</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="bandwidthChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Protocol Distribution</h3>
+                        <select id="protocol-filter" class="filter-select">
+                            <option>All Protocols</option>
+                            <option>HTTP/HTTPS</option>
+                            <option>DNS</option>
+                            <option>TCP/UDP</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="protocolChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Detailed Data -->
+            <div class="data-row">
+                <div class="data-card">
+                    <div class="data-header">
+                        <h3><i class="fas fa-list-alt"></i> Network Logs</h3>
+                        <button class="btn-clear" id="clear-logs">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="logs-container" id="logs-container">
+                        <!-- Logs will be added here -->
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-header">
+                        <h3><i class="fas fa-cogs"></i> Settings</h3>
+                    </div>
+                    <div class="settings-panel">
+                        <div class="setting-item">
+                            <label for="update-interval">Update Interval</label>
+                            <select id="update-interval" class="setting-select">
+                                <option value="1000">1 Second</option>
+                                <option value="2000" selected>2 Seconds</option>
+                                <option value="5000">5 Seconds</option>
+                                <option value="10000">10 Seconds</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="data-limit">Data Points</label>
+                            <input type="range" id="data-limit" min="10" max="100" value="50" class="setting-slider">
+                            <span id="data-limit-value">50</span>
+                        </div>
+                        <div class="setting-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="auto-refresh" checked>
+                                <span class="toggle-slider"></span>
+                                Auto Refresh
+                            </label>
+                        </div>
+                        <button class="btn-save" id="save-settings">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p><i class="fas fa-microchip"></i> System v2.4.1 | Monitoring since <span id="start-time">--:--</span></p>
+                    <p class="disclaimer">This dashboard displays simulated network data for demonstration purposes.</p>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn-export" id="export-data">
+                        <i class="fas fa-file-export"></i> Export Data
+                    </button>
+                    <button class="btn-help" id="help-btn">
+                        <i class="fas fa-question-circle"></i> Help
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
